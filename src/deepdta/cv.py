@@ -3,10 +3,11 @@
 import sys
 import json
 import numpy as np
+import pandas as pd
 import configparser
 import tensorflow as tf
 
-from data_utils import get_now
+from data_utils import get_now, get_data
 from evaluation import get_aupr, get_ci
 from model import CNN
 
@@ -24,9 +25,19 @@ def main(argv):
     num_epoch = conf.getint('model', 'num_epoch')
 
     data_path = conf.get('model', 'data_path')
-    char_smi = conf.get('model', 'char_smi')
-    char_seq = conf.get('model', 'char_seq')
-    print(char_seq, embed_dim)
+
+    ligands = pd.read_csv(data_path + 'ligands.csv', index_col=0, header=None)
+    proteins = pd.read_csv(data_path + 'proteins.csv',
+                           index_col=0, header=None)
+    inter = pd.read_csv(data_path + 'inter.csv', header=None)
+    print(ligands.shape, proteins.shape, inter.shape)
+
+    char_smi_set = json.load(open(conf.get('model', 'char_smi')))
+    char_seq_set = json.load(open(conf.get('model', 'char_seq')))
+
+    smi_feature, seq_feature, inter = get_data(
+        ligands, proteins, inter, max_smi_len, max_seq_len, char_smi_set, char_seq_set)
+    print(smi_feature.shape, seq_feature.shape, inter.shape)
 
 
 if __name__ == "__main__":
