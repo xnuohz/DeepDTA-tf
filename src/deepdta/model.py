@@ -45,10 +45,9 @@ class CNN(object):
         drop2 = layers.dropout(fc2, 0.1)
         fc3 = layers.fully_connected(drop2, 512)
 
-        predictions = layers.fully_connected(fc3, 1)
-        cost = tf.losses.mean_squared_error(self.labels, predictions)
-        print(cost.shape)
-        self.optimizer = tf.train.AdamOptimizer(0.001).minimize(cost)
+        self.predictions = layers.fully_connected(fc3, 1)
+        self.cost = tf.losses.mean_squared_error(self.labels, self.predictions)
+        self.optimizer = tf.train.AdamOptimizer(0.001).minimize(self.cost)
         self.saver = tf.train.Saver()
 
     def train(self, sess, train_x, train_y, valid_x=None, valid_y=None, nb_epoch=None, batch_size=None,
@@ -56,12 +55,12 @@ class CNN(object):
         print(get_now(), 'start training')
         if valid_x is None or valid_y is None:
             train_idx, valid_idx = train_test_split(
-                range(len(trainx)) if data_idx is None else data_idx, test_size=0.1)
+                range(len(train_x)) if data_idx is None else data_idx, test_size=0.1)
             valid_x, valid_y = train_x[valid_idx], train_y[valid_idx]
         else:
             train_idx = np.arange(
-                len(train_idx)) if data_idx is None else data_idx
-        sess.run(tf.global_variables())
+                len(train_x)) if data_idx is None else data_idx
+        sess.run(tf.global_variables_initializer())
         best_aupr = 0
         for idx in range(nb_epoch):
             np.random.shuffle(train_idx)
@@ -69,6 +68,7 @@ class CNN(object):
             for i in range(0, len(train_idx), batch_size):
                 batch_idx = train_idx[i: i + batch_size]
                 x, y = train_x[batch_idx], train_y[batch_idx]
+                # TODO: x shape is not right
                 feed_dict = {
                     self.smi: x[:, 0],
                     self.seq: x[:, 1],
