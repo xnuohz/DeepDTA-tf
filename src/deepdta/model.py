@@ -4,7 +4,6 @@ import numpy as np
 import tensorflow as tf
 import tensorflow.contrib.layers as layers
 from sklearn.model_selection import train_test_split
-from evaluation import get_aupr, get_ci
 from data_utils import get_now
 
 
@@ -61,7 +60,8 @@ class CNN(object):
             train_idx = np.arange(
                 len(train_x)) if data_idx is None else data_idx
         sess.run(tf.global_variables_initializer())
-        best_aupr = 0
+
+        best_mse = 999999
         for idx in range(nb_epoch):
             np.random.shuffle(train_idx)
             train_loss, train_res = 0, np.empty(len(train_idx))
@@ -80,9 +80,6 @@ class CNN(object):
                 train_res[i: i + batch_size] = np.squeeze(preds, 1)
                 train_loss += loss * len(y)
             train_loss /= len(train_idx)
-            train_ci, train_aupr = get_ci(train_y[train_idx], train_res), get_aupr(
-                train_y[train_idx], train_res)
-            # print(train_res, trainy)
 
             valid_loss, valid_res = 0, np.empty(shape=valid_y.shape)
             for i in range(0, len(valid_x), batch_size):
@@ -92,18 +89,16 @@ class CNN(object):
                     self.seq: np.asarray([t[1] for t in x]),
                     self.labels: y
                 }
-                loss, preds = sess.run(
+
+                loss, valid_res[i: i + batch_size] = sess.run(
                     [self.cost, self.predictions], feed_dict=feed_dict)
-                valid_res[i: i + batch_size] = np.squeeze(preds, 1)
+                    
                 valid_loss += loss * len(y)
             valid_loss /= len(valid_y)
-            valid_ci, valid_aupr = get_ci(
-                valid_y, valid_res), get_aupr(valid_y, valid_res)
             if verbose:
-                print(get_now(), idx, "loss:", train_loss, valid_loss,
-                      'CI:', train_ci, valid_ci, 'AUPR:', train_aupr, valid_aupr)
-            if valid_aupr > best_aupr:
-                best_aupr = valid_aupr
+                print(get_now(), idx, "loss:", round(train_loss, 4), round(valid_loss, 4))
+            if valid_loss < best_mse:
+                best_mse = valid_loss
                 self.saver.save(
                     sess, model_path if model_path is not None else 'tmp/cnn.model')
 
@@ -122,7 +117,3 @@ class CNN(object):
             res[i: i +
                 batch_size] = sess.run(self.predictions, feed_dict=feed_dict)
         return res
-
-
-if __name__ == "__main__":
-    model = CNN(32, 4, 8, 100, 1000, 65, 26, 128)

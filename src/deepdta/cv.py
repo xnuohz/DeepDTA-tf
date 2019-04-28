@@ -9,8 +9,9 @@ import configparser
 import tensorflow as tf
 
 from data_utils import get_now, get_data, get_feature, new_pair_fold, new_ligand_fold, new_protein_fold
-from evaluation import get_aupr, get_ci
 from model import CNN
+
+os.environ['CUDA_VISIBLE_DEVICES'] = '3'
 
 
 def main(argv):
@@ -48,6 +49,7 @@ def main(argv):
                 embed_dim=conf.getint('model', 'embed_dim'))
 
     for cv_id in range(cv_num):
+        print('start cv', cv_id)
         model_path = os.path.join(
             conf.get('model', 'path', fallback='tmp'), 'cv-' + str(cv_id) + '.model')
         trainX, trainy, validX, validy = get_feature(

@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 import numpy as np
-from sklearn.metrics import auc, precision_recall_curve
-
-
-def get_aupr(target, prediction):
-    p, r, _ = precision_recall_curve(target, prediction)
-    return auc(r, p)
-
 
 def get_ci(Y, P):
     summ = 0
