@@ -62,12 +62,31 @@ def new_pair_fold(inter, cv_num):
     return cv_train, cv_valid
 
 
-def new_ligand_fold():
-    pass
+def new_ligand_fold(inter, cv_num):
+    inter_row, inter_col = np.where(np.isnan(inter) == False)
+    coord = np.asarray(list(zip(inter_row, inter_col)))
+    kfold = KFold(n_splits=cv_num, shuffle=True, random_state=1)
+    cv_train, cv_valid = [], []
+
+    d_num = np.shape(inter)[0]
+    for train, valid in kfold.split(range(d_num)):
+        cv_train.append(np.asarray([t for t in coord if t[0] in train]))
+        cv_valid.append(np.asarray([t for t in coord if t[0] in valid]))
+    print(np.shape(cv_train), np.shape(cv_valid))
+    return cv_train, cv_valid
 
 
-def new_protein_fold():
-    pass
+def new_protein_fold(inter, cv_num):
+    inter_row, inter_col = np.where(np.isnan(inter) == False)
+    coord = np.asarray(list(zip(inter_row, inter_col)))
+    kfold = KFold(n_splits=cv_num, shuffle=True, random_state=1)
+    cv_train, cv_valid = [], []
+
+    t_num = np.shape(inter)[1]
+    for train, valid in kfold.split(range(t_num)):
+        cv_train.append(np.asarray([t for t in coord if t[1] in train]))
+        cv_valid.append(np.asarray([t for t in coord if t[1] in valid]))
+    return cv_train, cv_valid
 
 
 def get_now():
