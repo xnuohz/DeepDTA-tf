@@ -68,14 +68,16 @@ class CNN(object):
             for i in range(0, len(train_idx), batch_size):
                 batch_idx = train_idx[i: i + batch_size]
                 x, y = train_x[batch_idx], train_y[batch_idx]
-                # TODO: x shape is not right
+                # self.smi: [?, 100], self.seq: [?, 1000]
                 feed_dict = {
-                    self.smi: x[:, 0],
-                    self.seq: x[:, 1],
+                    self.smi: np.asarray([t[0] for t in x]),
+                    self.seq: np.asarray([t[1] for t in x]),
                     self.labels: y
                 }
-                _, loss, train_res[i: i + batch_size] = sess.run([self.optimizer, self.cost, self.predictions],
-                                                                 feed_dict=feed_dict)
+                # preds: [?, 1], train_res[i: i + batch_size]: [?,]
+                _, loss, preds = sess.run([self.optimizer, self.cost, self.predictions],
+                                          feed_dict=feed_dict)
+                train_res[i: i + batch_size] = np.squeeze(preds, 1)
                 train_loss += loss * len(y)
             train_loss /= len(train_idx)
             train_ci, train_aupr = get_ci(train_y[train_idx], train_res), get_aupr(
@@ -86,12 +88,13 @@ class CNN(object):
             for i in range(0, len(valid_x), batch_size):
                 x, y = valid_x[i: i + batch_size], valid_y[i: i + batch_size]
                 feed_dict = {
-                    self.smi: x[:, 0],
-                    self.seq: x[:, 1],
+                    self.smi: np.asarray([t[0] for t in x]),
+                    self.seq: np.asarray([t[1] for t in x]),
                     self.labels: y
                 }
-                loss, valid_res[i: i + batch_size] = sess.run(
+                loss, preds = sess.run(
                     [self.cost, self.predictions], feed_dict=feed_dict)
+                valid_res[i: i + batch_size] = np.squeeze(preds, 1)
                 valid_loss += loss * len(y)
             valid_loss /= len(valid_y)
             valid_ci, valid_aupr = get_ci(
