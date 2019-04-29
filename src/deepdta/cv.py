@@ -25,13 +25,15 @@ def main(argv):
     ligands = pd.read_csv(data_path + 'ligands.csv', header=None)
     proteins = pd.read_csv(data_path + 'proteins.csv', header=None)
     inter = pd.read_csv(data_path + 'inter.csv', header=None)
+    inter = -np.log10(inter / math.pow(10, 9))
+    inter = np.asarray(inter)
     print(ligands.shape, proteins.shape, inter.shape)
 
     char_smi_set = json.load(open(conf.get('model', 'char_smi')))
     char_seq_set = json.load(open(conf.get('model', 'char_seq')))
 
-    smi_feature, seq_feature, inter = get_data(
-        ligands, proteins, inter, max_smi_len, max_seq_len, char_smi_set, char_seq_set)
+    smi_feature, seq_feature = get_data(
+        ligands, proteins, max_smi_len, max_seq_len, char_smi_set, char_seq_set)
     print(smi_feature.shape, seq_feature.shape, inter.shape)
 
     cv_num = conf.getint('cv', 'cv_num', fallback=5)

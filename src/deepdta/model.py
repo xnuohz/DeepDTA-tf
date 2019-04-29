@@ -92,11 +92,12 @@ class CNN(object):
 
                 loss, valid_res[i: i + batch_size] = sess.run(
                     [self.cost, self.predictions], feed_dict=feed_dict)
-                    
+
                 valid_loss += loss * len(y)
             valid_loss /= len(valid_y)
             if verbose:
-                print(get_now(), idx, "loss:", round(train_loss, 4), round(valid_loss, 4))
+                print(get_now(), idx, "loss:", round(
+                    train_loss, 4), round(valid_loss, 4))
             if valid_loss < best_mse:
                 best_mse = valid_loss
                 self.saver.save(
@@ -110,10 +111,9 @@ class CNN(object):
         for i in range(0, len(X), batch_size):
             x = X[i: i + batch_size]
             feed_dict = {
-                self.smi: x[:, 0],
-                self.seq: x[:, 1],
-                self.labels: y
+                self.smi: np.asarray([t[0] for t in x]),
+                self.seq: np.asarray([t[1] for t in x])
             }
-            res[i: i +
-                batch_size] = sess.run(self.predictions, feed_dict=feed_dict)
+            preds = sess.run(self.predictions, feed_dict=feed_dict)
+            res[i: i + batch_size] = np.squeeze(preds, 1)
         return res

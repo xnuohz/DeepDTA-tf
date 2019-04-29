@@ -20,9 +20,7 @@ def label_sequence(line, max_seq_len, smi_ch_ind):
     return X
 
 
-def get_data(ligands, proteins, inter, max_smi_len, max_seq_len, char_smi_set, char_seq_set):
-    inter = -np.log10(inter / math.pow(10, 9))
-
+def get_data(ligands, proteins, max_smi_len, max_seq_len, char_smi_set, char_seq_set):
     smi_feature = []
     seq_feature = []
 
@@ -34,7 +32,7 @@ def get_data(ligands, proteins, inter, max_smi_len, max_seq_len, char_smi_set, c
         seq_feature.append(label_sequence(
             row[1], max_seq_len, char_seq_set))
 
-    return np.asarray(smi_feature), np.asarray(seq_feature), np.asarray(inter)
+    return np.asarray(smi_feature), np.asarray(seq_feature)
 
 
 def get_feature(inter, smi_feature, seq_feature, train_idx, valid_idx):
