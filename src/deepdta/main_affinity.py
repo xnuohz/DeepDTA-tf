@@ -8,8 +8,8 @@ import pandas as pd
 import configparser
 import tensorflow as tf
 
-from data_utils import get_now, get_data, get_feature
-from model import CNN
+from data_utils import get_now, get_data
+from model import CNNAffinity
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
@@ -39,14 +39,14 @@ def main(argv):
 
     sess = tf.InteractiveSession(
         config=tf.ConfigProto(allow_soft_placement=True))
-    model = CNN(filter_num=conf.getint('model', 'filter_num'),
-                smi_window_len=conf.getint('model', 'smi_window_len'),
-                seq_window_len=conf.getint('model', 'seq_window_len'),
-                max_smi_len=max_smi_len,
-                max_seq_len=max_seq_len,
-                char_smi_set_size=len(char_smi_set),
-                char_seq_set_size=len(char_seq_set),
-                embed_dim=conf.getint('model', 'embed_dim'))
+    model = CNNAffinity(filter_num=conf.getint('model', 'filter_num'),
+                        smi_window_len=conf.getint('model', 'smi_window_len'),
+                        seq_window_len=conf.getint('model', 'seq_window_len'),
+                        max_smi_len=max_smi_len,
+                        max_seq_len=max_seq_len,
+                        char_smi_set_size=len(char_smi_set),
+                        char_seq_set_size=len(char_seq_set),
+                        embed_dim=conf.getint('model', 'embed_dim'))
 
     trainy = np.asarray(pairs.iloc[:, 2]).reshape([-1, 1])
     trainX = []
