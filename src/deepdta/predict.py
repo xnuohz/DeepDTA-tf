@@ -36,7 +36,7 @@ def main(argv):
                 embed_dim=conf.getint('model', 'embed_dim'))
 
     model_path = model_path = os.path.join(
-        conf.get('model', 'path', fallback='tmp'), 'cv-4.model')
+        conf.get('model', 'path', fallback='tmp'), 'all.model')
 
     for data_name in data_predicted:
         path = data_path + data_name + '/'
@@ -52,7 +52,7 @@ def main(argv):
             inputs.append([smif, seq_feature[0]])
         res = model.predict(sess, np.asarray(inputs), batch_size=conf.getint(
             'model', 'batch_size'), model_path=model_path)
-        names = list(ligands.iloc[:, 0])
+        names = [x.split('.')[0] for x in list(ligands.iloc[:, 0])]
         final_data = pd.DataFrame(np.asarray(list(zip(names, res))))
         final_data.to_csv(path + 'res.csv', index=None, header=None)
 
