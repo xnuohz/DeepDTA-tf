@@ -9,7 +9,7 @@ import configparser
 import tensorflow as tf
 
 from data_utils import get_now, get_data, get_feature, new_pair_fold, new_ligand_fold, new_protein_fold
-from model import CNNAffinity
+from model import CNNClassifier
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '3'
 
@@ -25,7 +25,6 @@ def main(argv):
     ligands = pd.read_csv(data_path + 'ligands.csv', header=None)
     proteins = pd.read_csv(data_path + 'proteins.csv', header=None)
     inter = pd.read_csv(data_path + 'inter.csv', header=None)
-    inter = -np.log10(inter / math.pow(10, 9))
     inter = np.asarray(inter)
     print(ligands.shape, proteins.shape, inter.shape)
 
@@ -41,14 +40,16 @@ def main(argv):
 
     sess = tf.InteractiveSession(
         config=tf.ConfigProto(allow_soft_placement=True))
-    model = CNNAffinity(filter_num=conf.getint('model', 'filter_num'),
-                        smi_window_len=conf.getint('model', 'smi_window_len'),
-                        seq_window_len=conf.getint('model', 'seq_window_len'),
-                        max_smi_len=max_smi_len,
-                        max_seq_len=max_seq_len,
-                        char_smi_set_size=len(char_smi_set),
-                        char_seq_set_size=len(char_seq_set),
-                        embed_dim=conf.getint('model', 'embed_dim'))
+    model = CNNClassifier(filter_num=conf.getint('model', 'filter_num'),
+                          smi_window_len=conf.getint(
+                              'model', 'smi_window_len'),
+                          seq_window_len=conf.getint(
+                              'model', 'seq_window_len'),
+                          max_smi_len=max_smi_len,
+                          max_seq_len=max_seq_len,
+                          char_smi_set_size=len(char_smi_set),
+                          char_seq_set_size=len(char_seq_set),
+                          embed_dim=conf.getint('model', 'embed_dim'))
 
     for cv_id in range(cv_num):
         print('start cv', cv_id)

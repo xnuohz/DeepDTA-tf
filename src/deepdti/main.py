@@ -9,7 +9,7 @@ import configparser
 import tensorflow as tf
 
 from data_utils import get_now, label_smiles, label_sequence
-from model import CNNClassifier
+from model import CNN
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
@@ -35,11 +35,14 @@ def main(argv):
 
     sess = tf.InteractiveSession(
         config=tf.ConfigProto(allow_soft_placement=True))
-    model = CNNClassifier(filter_num=conf.getint('model', 'filter_num'),
-                          smi_window_len=conf.getint('model', 'smi_window_len'), seq_window_len=conf.getint('model', 'seq_window_len'),
-                          max_smi_len=max_smi_len, max_seq_len=max_seq_len,
-                          char_smi_set_size=len(char_smi_set), char_seq_set_size=len(char_seq_set),
-                          embed_dim=conf.getint('model', 'embed_dim'))
+    model = CNN(filter_num=conf.getint('model', 'filter_num'),
+                smi_window_len=conf.getint('model', 'smi_window_len'),
+                seq_window_len=conf.getint('model', 'seq_window_len'),
+                max_smi_len=max_smi_len,
+                max_seq_len=max_seq_len,
+                char_smi_set_size=len(char_smi_set),
+                char_seq_set_size=len(char_seq_set),
+                embed_dim=conf.getint('model', 'embed_dim'))
 
     trainX, trainy = [], []
     # pos

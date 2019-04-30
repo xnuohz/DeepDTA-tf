@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 import datetime
+import math
 import numpy as np
 from sklearn.model_selection import KFold
 

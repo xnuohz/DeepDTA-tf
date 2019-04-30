@@ -28,15 +28,13 @@ params...
 ```
 * predict.cfg
 ```txt
-Notice: change model.path & data.type & data.prediction for prediction
+Notice: change model.path & data.prediction for prediction
 [model]
 params...
 path = ../../model/newkd
 
 [data]
 path = ../../data/
-# affinity or classification
-type = affinity
 prediction = FDA,Merck,XJ,YS,ZDC
 ```
 ## How to run
@@ -53,9 +51,13 @@ python main.py ../../config/model.cfg ../../config/data_newkd.cfg
 cd src/deepdta
 python predict.py ../../config/predict.cfg
 ```
-## AUC
+## Result
+* AUCs
 | dataset used in training | FDA | Merck | FDA + Merck
 | :-: | :-: | :-: | :-: |
 | kiba | 0.4803 | 0.5365 | 0.5083 |
 | newkd | 0.5250 | 0.6264 | 0.5551 |
 | DB201707 | 0.4921 | 0.6427 | 0.5979 |
+
+## ToDo List:
+new target & new pair 5 cv in DB201707
