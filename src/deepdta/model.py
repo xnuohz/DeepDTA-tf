@@ -51,6 +51,8 @@ class BaseModel(object):
     def predict(self, sess, X, model_path, batch_size=128):
         assert model_path is not None
         print(get_now(), 'Start Predicting')
+        # variables should also be initialized in prediction process!
+        sess.run(self.init())
         self.saver.restore(sess, model_path)
         res = np.empty(shape=X.shape[0])
         for i in range(0, len(X), batch_size):
@@ -68,7 +70,7 @@ class CNNAffinity(BaseModel):
     ''' Affinity Prediction '''
 
     def __init__(self, **kwargs):
-        BaseModel.__init__(self, **kwargs)
+        super(CNNAffinity, self).__init__(**kwargs)
         self.predictions = layers.fully_connected(
             self.fc3, 1, activation_fn=None)
         self.cost = tf.losses.mean_squared_error(self.labels, self.predictions)
@@ -133,7 +135,7 @@ class CNNClassifier(BaseModel):
     ''' Interaction Classifier '''
 
     def __init__(self, **kwargs):
-        BaseModel.__init__(self, **kwargs)
+        super(CNNClassifier, self).__init__(**kwargs)
         self.predictions = layers.fully_connected(
             self.fc3, 1, activation_fn=tf.nn.sigmoid)
         self.cost = tf.losses.log_loss(self.labels, self.predictions)
