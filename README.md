@@ -51,13 +51,31 @@ python main.py ../../config/model.cfg ../../config/data_newkd.cfg
 cd src/deepdta
 python predict.py ../../config/predict.cfg
 ```
-## Result
+## Results
 * AUCs
+
 | dataset used in training | FDA | Merck | FDA + Merck
 | :-: | :-: | :-: | :-: |
 | kiba | 0.4803 | 0.5365 | 0.5083 |
 | newkd | 0.5250 | 0.6264 | 0.5551 |
 | DB201707 | 0.4921 | 0.6427 | 0.5979 |
 
-## ToDo List:
-new target & new pair 5 cv in DB201707
+## DrugBank 201707 Result
+* AUC 5 cross validation
+
+| type | 1 | 2 | 3 | 4 | 5 |
+| :-: | :-: | :-: | :-: | :-: | :-: |
+| new target | 0.808 | 0.833 | 0.821 | 0.803 | 0.806 |
+| new pair | 0.900 | 0.904 | 0.892 | 0.902 | 0.891 |
+| new drug | 0.839 | 0.817 | 0.807 | 0.797 | 0.825 |
+
+* AUPR 5 cross validation
+
+| type | 1 | 2 | 3 | 4 | 5 |
+| :-: | :-: | :-: | :-: | :-: | :-: |
+| new target | 0.447 | 0.515 | 0.503 | 0.340 | 0.372 |
+| new pair | 0.622 | 0.609 | 0.578 | 0.634 | 0.584 |
+| new drug | 0.467 | 0.444 | 0.396 | 0.403 | 0.387 |
+
+## Drop P11388 col, other as training, P11388 as test
+AUC: 0.581
