@@ -59,6 +59,7 @@ python predict.py ../../config/predict.cfg
 | kiba | 0.4803 | 0.5365 | 0.5083 |
 | newkd | 0.5250 | 0.6264 | 0.5551 |
 | DB201707 | 0.4921 | 0.6427 | 0.5979 |
+| DB201707-del-P11388 | 0.4073 | 0.4669 | 0.5425 |
 
 ## DrugBank 201707 Result
 * AUC 5 cross validation

@@ -20,6 +20,21 @@ def label_sequence(line, max_seq_len, smi_ch_ind):
     return X
 
 
+def get_data(ligands, proteins, max_smi_len, max_seq_len, char_smi_set, char_seq_set):
+    smi_feature = []
+    seq_feature = []
+
+    for idx, row in ligands.iterrows():
+        smi_feature.append(label_smiles(
+            row[1], max_smi_len, char_smi_set))
+
+    for idx, row in proteins.iterrows():
+        seq_feature.append(label_sequence(
+            row[1], max_seq_len, char_seq_set))
+
+    return np.asarray(smi_feature), np.asarray(seq_feature)
+
+
 def get_feature(ligands, proteins, inter, coords, max_smi_len, char_smi_set, max_seq_len, char_seq_set):
     X, y = [], []
     for row, col in coords:
