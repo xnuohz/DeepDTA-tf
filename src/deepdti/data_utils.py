@@ -22,12 +22,12 @@ def label_sequence(line, max_seq_len, smi_ch_ind):
     return X
 
 
-def label_ecfp(line):
+def label_ecfp(line, max_smi_len):
     mol = Chem.MolFromSmiles(line)
     # radius 6
-    ecfp = AllChem.GetMorganFingerprintAsBitVect(mol, 6, nBits=8192)
+    ecfp = AllChem.GetMorganFingerprintAsBitVect(mol, 6, nBits=max_smi_len)
     X = list(map(int, ecfp.ToBitString()))
-    return X
+    return np.asarray(X)
 
 
 def get_data(ligands, proteins, max_smi_len, max_seq_len, char_smi_set, char_seq_set):

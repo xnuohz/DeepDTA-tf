@@ -9,16 +9,15 @@ from evaluation import get_auc, get_aupr
 
 
 class BaseModel(object):
-    def __init__(self, max_smi_len, max_seq_len):
-        self.smi = tf.placeholder(shape=[None, max_smi_len], dtype=tf.int32)
+    def __init__(self, max_seq_len):
         self.seq = tf.placeholder(shape=[None, max_seq_len], dtype=tf.int32)
         self.labels = tf.placeholder(shape=[None, 1], dtype=tf.int32)
         self.init = tf.global_variables_initializer
 
-    def build_smiles(self, smi, char_smi_set_size, embed_dim, filter_num, smi_window_len):
+    def build_smiles(self, char_smi_set_size, embed_dim, filter_num, smi_window_len):
         self.smi_embed = tf.Variable(tf.random_normal(
             [char_smi_set_size + 1, embed_dim]))
-        enc_smi = tf.nn.embedding_lookup(self.smi_embed, smi)
+        enc_smi = tf.nn.embedding_lookup(self.smi_embed, self.smi)
         enc_smi = layers.conv1d(enc_smi, filter_num,
                                 smi_window_len, padding='VALID')
         enc_smi = layers.conv1d(enc_smi, filter_num * 2,
@@ -28,18 +27,18 @@ class BaseModel(object):
         enc_smi = tf.keras.layers.GlobalAveragePooling1D()(enc_smi)
         return enc_smi
 
-    def build_ecfp(self, smi):
-        fc1 = layers.fully_connected(smi, 1024)
+    def build_ecfp(self):
+        fc1 = layers.fully_connected(self.smi, 1024)
         drop1 = layers.dropout(fc1, 0.1)
         fc2 = layers.fully_connected(drop1, 1024)
         drop2 = layers.dropout(fc2, 0.1)
         fc3 = layers.fully_connected(drop2, 512)
         return fc3
 
-    def build_sequence(self, seq, char_seq_set_size, embed_dim, filter_num, seq_window_len):
+    def build_sequence(self, char_seq_set_size, embed_dim, filter_num, seq_window_len):
         self.seq_embed = tf.Variable(tf.random_normal(
             [char_seq_set_size + 1, embed_dim]))
-        enc_seq = tf.nn.embedding_lookup(self.seq_embed, seq)
+        enc_seq = tf.nn.embedding_lookup(self.seq_embed, self.seq)
         enc_seq = layers.conv1d(enc_seq, filter_num,
                                 seq_window_len, padding='VALID')
         enc_seq = layers.conv1d(enc_seq, filter_num * 2,
@@ -128,13 +127,13 @@ class BaseModel(object):
 class CNN(BaseModel):
     ''' SMILES + Sequence '''
 
-    def __init__(self, filter_num, smi_window_len, seq_window_len, char_smi_set_size, char_seq_set_size, embed_dim, **kwargs):
+    def __init__(self, filter_num, smi_window_len, seq_window_len, char_smi_set_size, char_seq_set_size, embed_dim, max_smi_len, **kwargs):
         super(CNN, self).__init__(**kwargs)
-
-        enc_smi = self.build_smiles(self.smi, char_smi_set_size,
-                                    embed_dim, filter_num, smi_window_len)
+        self.smi = tf.placeholder(shape=[None, max_smi_len], dtype=tf.int32)
+        enc_smi = self.build_smiles(
+            char_smi_set_size, embed_dim, filter_num, smi_window_len)
         enc_seq = self.build_sequence(
-            self.seq, char_seq_set_size, embed_dim, filter_num, seq_window_len)
+            char_seq_set_size, embed_dim, filter_num, seq_window_len)
 
         flatten = tf.concat([enc_smi, enc_seq], -1)
         fc1 = layers.fully_connected(flatten, 1024)
@@ -153,12 +152,13 @@ class CNN(BaseModel):
 class ECFPCNN(BaseModel):
     ''' ECFP + Sequence '''
 
-    def __init__(self, filter_num, seq_window_len, char_seq_set_size, embed_dim, **kwargs):
+    def __init__(self, filter_num, seq_window_len, char_seq_set_size, embed_dim, max_smi_len, **kwargs):
         super(ECFPCNN, self).__init__(**kwargs)
+        self.smi = tf.placeholder(shape=[None, max_smi_len], dtype=tf.float32)
         # smi encode params is fixed currently.
-        enc_smi = self.build_ecfp(self.smi)
+        enc_smi = self.build_ecfp()
         enc_seq = self.build_sequence(
-            self.seq, char_seq_set_size, embed_dim, filter_num, seq_window_len)
+            char_seq_set_size, embed_dim, filter_num, seq_window_len)
 
         flatten = tf.concat([enc_smi, enc_seq], -1)
         fc1 = layers.fully_connected(flatten, 1024)

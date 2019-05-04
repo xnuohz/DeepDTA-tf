@@ -20,6 +20,11 @@ kiba as training set, predict new data(FDA & Merck) and calc AUC
 [model]
 data_path = path of training data
 path = path for saving the model
+
+[cv]
+cv_num = 5
+# 1: new pair, 2: new target, 3: new drug
+problem_type = 1
 ```
 * model.cfg
 ```txt
@@ -40,7 +45,7 @@ prediction = FDA,Merck,XJ,YS,ZDC
 ## How to run
 * training
 ```bash
-cd src/deepdta
+cd src/deepdta or cd/src/deepdti
 # cross validation
 python cv.py ../../config/model.cfg ../../config/data_kiba.cfg
 # all for training
@@ -48,7 +53,7 @@ python main.py ../../config/model.cfg ../../config/data_newkd.cfg
 ```
 * prediction
 ```bash
-cd src/deepdta
+cd src/deepdta or cd/src/deepdti
 python predict.py ../../config/predict.cfg
 ```
 ## Results
@@ -78,5 +83,8 @@ python predict.py ../../config/predict.cfg
 | new pair | 0.622 | 0.609 | 0.578 | 0.634 | 0.584 |
 | new drug | 0.467 | 0.444 | 0.396 | 0.403 | 0.387 |
 
-## Drop P11388 col, other as training, P11388 as test
+## Drop P11388 col, other as training, P11388 col as test
 AUC: 0.581
+
+## Tips:
+the latest model is in model/drugbank-newdrug/all.model(drop P11388 col, other as training to predict FDA & Merck and calc AUC & AUPR)

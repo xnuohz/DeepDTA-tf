@@ -13,7 +13,7 @@ from data_utils import get_now, get_coord, label_smiles, label_sequence, label_e
 from model import CNN, ECFPCNN
 from sklearn.metrics import roc_auc_score
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '2'
 
 
 def main(argv):
@@ -40,26 +40,25 @@ def main(argv):
     sess = tf.InteractiveSession(
         config=tf.ConfigProto(allow_soft_placement=True))
     ''' SMILES + seq '''
-    model = CNN(filter_num=conf.getint('model', 'filter_num'),
-                smi_window_len=conf.getint('model', 'smi_window_len'),
-                seq_window_len=conf.getint('model', 'seq_window_len'),
-                max_smi_len=max_smi_len,
-                max_seq_len=max_seq_len,
-                char_smi_set_size=len(char_smi_set),
-                char_seq_set_size=len(char_seq_set),
-                embed_dim=conf.getint('model', 'embed_dim'))
+    # model = CNN(filter_num=conf.getint('model', 'filter_num'),
+    #             smi_window_len=conf.getint('model', 'smi_window_len'),
+    #             seq_window_len=conf.getint('model', 'seq_window_len'),
+    #             max_smi_len=max_smi_len,
+    #             max_seq_len=max_seq_len,
+    #             char_smi_set_size=len(char_smi_set),
+    #             char_seq_set_size=len(char_seq_set),
+    #             embed_dim=conf.getint('model', 'embed_dim'))
     ''' ECFP + seq '''
-    # model = ECFPCNN(filter_num=conf.getint('model', 'filter_num'),
-    #                 seq_window_len=conf.getint('model', 'seq_window_len'),
-    #                 max_smi_len=max_smi_len,
-    #                 max_seq_len=max_seq_len,
-    #                 char_seq_set_size=len(char_seq_set),
-    #                 embed_dim=conf.getint('model', 'embed_dim'))
+    model = ECFPCNN(filter_num=conf.getint('model', 'filter_num'),
+                    seq_window_len=conf.getint('model', 'seq_window_len'),
+                    char_seq_set_size=len(char_seq_set),
+                    embed_dim=conf.getint('model', 'embed_dim'),
+                    max_smi_len=max_smi_len,
+                    max_seq_len=max_seq_len)
 
     trainX, trainy = [], []
 
     pos_coord, neg_coord = get_coord(inter)
-
     for row, col in pos_coord:
         smi = ligands.iloc[row, 1]
         seq = proteins.iloc[col, 1]
@@ -67,7 +66,7 @@ def main(argv):
             ''' CNN '''
             # smi_vector = label_smiles(smi, max_smi_len, char_smi_set)
             ''' ECFPCNN '''
-            smi_vector = label_ecfp(smi)
+            smi_vector = label_ecfp(smi, max_smi_len)
 
             seq_vector = label_sequence(seq, max_seq_len, char_seq_set)
             trainX.append([smi_vector, seq_vector])
@@ -82,7 +81,7 @@ def main(argv):
             ''' CNN '''
             # smi_vector = label_smiles(smi, max_smi_len, char_smi_set)
             ''' ECFPCNN '''
-            smi_vector = label_ecfp(smi)
+            smi_vector = label_ecfp(smi, max_smi_len)
 
             seq_vector = label_sequence(seq, max_seq_len, char_seq_set)
             trainX.append([smi_vector, seq_vector])
@@ -104,7 +103,7 @@ def main(argv):
             ''' CNN '''
             # smi_vector = label_smiles(smi, max_smi_len, char_smi_set)
             ''' ECFPCNN '''
-            smi_vector = label_ecfp(smi)
+            smi_vector = label_ecfp(smi, max_smi_len)
 
             seq_vector = label_sequence(pred_seq, max_seq_len, char_seq_set)
             predX.append([smi_vector, seq_vector])
