@@ -4,6 +4,8 @@ import datetime
 import math
 import numpy as np
 from sklearn.model_selection import KFold
+from rdkit import Chem
+from rdkit.Chem import AllChem
 
 
 def label_smiles(line, max_smi_len, smi_ch_ind):
@@ -17,6 +19,14 @@ def label_sequence(line, max_seq_len, smi_ch_ind):
     X = np.zeros(max_seq_len)
     for i, ch in enumerate(line[:max_seq_len]):
         X[i] = smi_ch_ind[ch]
+    return X
+
+
+def label_ecfp(line):
+    mol = Chem.MolFromSmiles(line)
+    # radius 6
+    ecfp = AllChem.GetMorganFingerprintAsBitVect(mol, 6, nBits=8192)
+    X = list(map(int, ecfp.ToBitString()))
     return X
 
 

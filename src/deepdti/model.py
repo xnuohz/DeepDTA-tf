@@ -9,18 +9,16 @@ from evaluation import get_auc, get_aupr
 
 
 class BaseModel(object):
-    def __init__(self, filter_num, smi_window_len, seq_window_len,
-                 max_smi_len, max_seq_len, char_smi_set_size, char_seq_set_size, embed_dim):
+    def __init__(self, max_smi_len, max_seq_len):
         self.smi = tf.placeholder(shape=[None, max_smi_len], dtype=tf.int32)
         self.seq = tf.placeholder(shape=[None, max_seq_len], dtype=tf.int32)
         self.labels = tf.placeholder(shape=[None, 1], dtype=tf.int32)
+        self.init = tf.global_variables_initializer
 
+    def build_smiles(self, smi, char_smi_set_size, embed_dim, filter_num, smi_window_len):
         self.smi_embed = tf.Variable(tf.random_normal(
             [char_smi_set_size + 1, embed_dim]))
-        self.seq_embed = tf.Variable(tf.random_normal(
-            [char_seq_set_size + 1, embed_dim]))
-
-        enc_smi = tf.nn.embedding_lookup(self.smi_embed, self.smi)
+        enc_smi = tf.nn.embedding_lookup(self.smi_embed, smi)
         enc_smi = layers.conv1d(enc_smi, filter_num,
                                 smi_window_len, padding='VALID')
         enc_smi = layers.conv1d(enc_smi, filter_num * 2,
@@ -28,8 +26,20 @@ class BaseModel(object):
         enc_smi = layers.conv1d(enc_smi, filter_num * 3,
                                 smi_window_len, padding='VALID')
         enc_smi = tf.keras.layers.GlobalAveragePooling1D()(enc_smi)
+        return enc_smi
 
-        enc_seq = tf.nn.embedding_lookup(self.seq_embed, self.seq)
+    def build_ecfp(self, smi):
+        fc1 = layers.fully_connected(smi, 1024)
+        drop1 = layers.dropout(fc1, 0.1)
+        fc2 = layers.fully_connected(drop1, 1024)
+        drop2 = layers.dropout(fc2, 0.1)
+        fc3 = layers.fully_connected(drop2, 512)
+        return fc3
+
+    def build_sequence(self, seq, char_seq_set_size, embed_dim, filter_num, seq_window_len):
+        self.seq_embed = tf.Variable(tf.random_normal(
+            [char_seq_set_size + 1, embed_dim]))
+        enc_seq = tf.nn.embedding_lookup(self.seq_embed, seq)
         enc_seq = layers.conv1d(enc_seq, filter_num,
                                 seq_window_len, padding='VALID')
         enc_seq = layers.conv1d(enc_seq, filter_num * 2,
@@ -37,44 +47,7 @@ class BaseModel(object):
         enc_seq = layers.conv1d(enc_seq, filter_num * 3,
                                 seq_window_len, padding='VALID')
         enc_seq = tf.keras.layers.GlobalAveragePooling1D()(enc_seq)
-
-        flatten = tf.concat([enc_smi, enc_seq], -1)
-        fc1 = layers.fully_connected(flatten, 1024)
-        drop1 = layers.dropout(fc1, 0.1)
-        fc2 = layers.fully_connected(drop1, 1024)
-        drop2 = layers.dropout(fc2, 0.1)
-        self.fc3 = layers.fully_connected(drop2, 512)
-
-        self.init = tf.global_variables_initializer
-        self.saver = tf.train.Saver()
-
-    def predict(self, sess, X, model_path, batch_size=128):
-        assert model_path is not None
-        print(get_now(), 'Start Predicting')
-        # variables should also be initialized in prediction process!
-        sess.run(self.init())
-        self.saver.restore(sess, model_path)
-        res = np.empty(shape=X.shape[0])
-        for i in range(0, len(X), batch_size):
-            x = X[i: i + batch_size]
-            feed_dict = {
-                self.smi: np.asarray([t[0] for t in x]),
-                self.seq: np.asarray([t[1] for t in x])
-            }
-            preds = sess.run(self.predictions, feed_dict=feed_dict)
-            res[i: i + batch_size] = np.squeeze(preds, 1)
-        return res
-
-
-class CNN(BaseModel):
-    ''' Interaction Classifier '''
-
-    def __init__(self, **kwargs):
-        super(CNN, self).__init__(**kwargs)
-        self.predictions = layers.fully_connected(
-            self.fc3, 1, activation_fn=tf.nn.sigmoid)
-        self.cost = tf.losses.log_loss(self.labels, self.predictions)
-        self.optimizer = tf.train.AdamOptimizer(0.001).minimize(self.cost)
+        return enc_seq
 
     def train(self, sess, train_x, train_y, valid_x=None, valid_y=None, nb_epoch=None, batch_size=None,
               verbose=True, model_path=None, data_idx=None):
@@ -133,3 +106,69 @@ class CNN(BaseModel):
                 best_aupr = valid_aupr
                 self.saver.save(
                     sess, model_path if model_path is not None else 'tmp/cnn-classifier.model')
+
+    def predict(self, sess, X, model_path, batch_size=128):
+        assert model_path is not None
+        print(get_now(), 'Start Predicting')
+        # variables should also be initialized in prediction process!
+        sess.run(self.init())
+        self.saver.restore(sess, model_path)
+        res = np.empty(shape=X.shape[0])
+        for i in range(0, len(X), batch_size):
+            x = X[i: i + batch_size]
+            feed_dict = {
+                self.smi: np.asarray([t[0] for t in x]),
+                self.seq: np.asarray([t[1] for t in x])
+            }
+            preds = sess.run(self.predictions, feed_dict=feed_dict)
+            res[i: i + batch_size] = np.squeeze(preds, 1)
+        return res
+
+
+class CNN(BaseModel):
+    ''' SMILES + Sequence '''
+
+    def __init__(self, filter_num, smi_window_len, seq_window_len, char_smi_set_size, char_seq_set_size, embed_dim, **kwargs):
+        super(CNN, self).__init__(**kwargs)
+
+        enc_smi = self.build_smiles(self.smi, char_smi_set_size,
+                                    embed_dim, filter_num, smi_window_len)
+        enc_seq = self.build_sequence(
+            self.seq, char_seq_set_size, embed_dim, filter_num, seq_window_len)
+
+        flatten = tf.concat([enc_smi, enc_seq], -1)
+        fc1 = layers.fully_connected(flatten, 1024)
+        drop1 = layers.dropout(fc1, 0.1)
+        fc2 = layers.fully_connected(drop1, 1024)
+        drop2 = layers.dropout(fc2, 0.1)
+        fc3 = layers.fully_connected(drop2, 512)
+
+        self.predictions = layers.fully_connected(
+            fc3, 1, activation_fn=tf.nn.sigmoid)
+        self.cost = tf.losses.log_loss(self.labels, self.predictions)
+        self.optimizer = tf.train.AdamOptimizer(0.001).minimize(self.cost)
+        self.saver = tf.train.Saver()
+
+
+class ECFPCNN(BaseModel):
+    ''' ECFP + Sequence '''
+
+    def __init__(self, filter_num, seq_window_len, char_seq_set_size, embed_dim, **kwargs):
+        super(ECFPCNN, self).__init__(**kwargs)
+        # smi encode params is fixed currently.
+        enc_smi = self.build_ecfp(self.smi)
+        enc_seq = self.build_sequence(
+            self.seq, char_seq_set_size, embed_dim, filter_num, seq_window_len)
+
+        flatten = tf.concat([enc_smi, enc_seq], -1)
+        fc1 = layers.fully_connected(flatten, 1024)
+        drop1 = layers.dropout(fc1, 0.1)
+        fc2 = layers.fully_connected(drop1, 1024)
+        drop2 = layers.dropout(fc2, 0.1)
+        fc3 = layers.fully_connected(drop2, 512)
+
+        self.predictions = layers.fully_connected(
+            fc3, 1, activation_fn=tf.nn.sigmoid)
+        self.cost = tf.losses.log_loss(self.labels, self.predictions)
+        self.optimizer = tf.train.AdamOptimizer(0.001).minimize(self.cost)
+        self.saver = tf.train.Saver()
