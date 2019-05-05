@@ -7,8 +7,8 @@ import configparser
 import json
 import os
 import sys
-from model import CNN
-from data_utils import get_data
+from model import CNN, ECFPCNN
+from data_utils import get_data, label_ecfp
 
 
 def main(argv):
@@ -26,14 +26,22 @@ def main(argv):
     sess = tf.InteractiveSession(
         config=tf.ConfigProto(allow_soft_placement=True))
 
-    model = CNN(filter_num=conf.getint('model', 'filter_num'),
-                smi_window_len=conf.getint('model', 'smi_window_len'),
-                seq_window_len=conf.getint('model', 'seq_window_len'),
-                max_smi_len=max_smi_len,
-                max_seq_len=max_seq_len,
-                char_smi_set_size=len(char_smi_set),
-                char_seq_set_size=len(char_seq_set),
-                embed_dim=conf.getint('model', 'embed_dim'))
+    ''' SMILES + seq '''
+    # model = CNN(filter_num=conf.getint('model', 'filter_num'),
+    #             smi_window_len=conf.getint('model', 'smi_window_len'),
+    #             seq_window_len=conf.getint('model', 'seq_window_len'),
+    #             max_smi_len=max_smi_len,
+    #             max_seq_len=max_seq_len,
+    #             char_smi_set_size=len(char_smi_set),
+    #             char_seq_set_size=len(char_seq_set),
+    #             embed_dim=conf.getint('model', 'embed_dim'))
+    ''' ECFP + seq '''
+    model = ECFPCNN(filter_num=conf.getint('model', 'filter_num'),
+                    seq_window_len=conf.getint('model', 'seq_window_len'),
+                    char_seq_set_size=len(char_seq_set),
+                    embed_dim=conf.getint('model', 'embed_dim'),
+                    max_smi_len=max_smi_len,
+                    max_seq_len=max_seq_len)
 
     model_path = model_path = os.path.join(
         conf.get('model', 'path', fallback='tmp'), 'all.model')

@@ -15,9 +15,9 @@ class BaseModel(object):
         self.init = tf.global_variables_initializer
 
     def build_smiles(self, char_smi_set_size, embed_dim, filter_num, smi_window_len):
-        self.smi_embed = tf.Variable(tf.random_normal(
+        smi_embed = tf.Variable(tf.random_normal(
             [char_smi_set_size + 1, embed_dim]))
-        enc_smi = tf.nn.embedding_lookup(self.smi_embed, self.smi)
+        enc_smi = tf.nn.embedding_lookup(smi_embed, self.smi)
         enc_smi = layers.conv1d(enc_smi, filter_num,
                                 smi_window_len, padding='VALID')
         enc_smi = layers.conv1d(enc_smi, filter_num * 2,
@@ -29,16 +29,16 @@ class BaseModel(object):
 
     def build_ecfp(self):
         fc1 = layers.fully_connected(self.smi, 1024)
-        drop1 = layers.dropout(fc1, 0.1)
-        fc2 = layers.fully_connected(drop1, 1024)
-        drop2 = layers.dropout(fc2, 0.1)
-        fc3 = layers.fully_connected(drop2, 512)
+        # drop1 = layers.dropout(fc1, 0.1)
+        fc2 = layers.fully_connected(fc1, 1024)
+        # drop2 = layers.dropout(fc2, 0.1)
+        fc3 = layers.fully_connected(fc2, 512)
         return fc3
 
     def build_sequence(self, char_seq_set_size, embed_dim, filter_num, seq_window_len):
-        self.seq_embed = tf.Variable(tf.random_normal(
+        seq_embed = tf.Variable(tf.random_normal(
             [char_seq_set_size + 1, embed_dim]))
-        enc_seq = tf.nn.embedding_lookup(self.seq_embed, self.seq)
+        enc_seq = tf.nn.embedding_lookup(seq_embed, self.seq)
         enc_seq = layers.conv1d(enc_seq, filter_num,
                                 seq_window_len, padding='VALID')
         enc_seq = layers.conv1d(enc_seq, filter_num * 2,
@@ -125,7 +125,7 @@ class BaseModel(object):
 
 
 class CNN(BaseModel):
-    ''' SMILES + Sequence '''
+    """ SMILES + Sequence """
 
     def __init__(self, filter_num, smi_window_len, seq_window_len, char_smi_set_size, char_seq_set_size, embed_dim, max_smi_len, **kwargs):
         super(CNN, self).__init__(**kwargs)
@@ -150,7 +150,7 @@ class CNN(BaseModel):
 
 
 class ECFPCNN(BaseModel):
-    ''' ECFP + Sequence '''
+    """ ECFP + Sequence """
 
     def __init__(self, filter_num, seq_window_len, char_seq_set_size, embed_dim, max_smi_len, **kwargs):
         super(ECFPCNN, self).__init__(**kwargs)

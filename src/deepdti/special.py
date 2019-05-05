@@ -11,7 +11,7 @@ import tensorflow as tf
 
 from data_utils import get_now, get_coord, label_smiles, label_sequence, label_ecfp
 from model import CNN, ECFPCNN
-from sklearn.metrics import roc_auc_score
+from evaluation import get_auc, get_aupr
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '2'
 
@@ -122,7 +122,8 @@ def main(argv):
                 model_path=model_path)
     res = model.predict(sess, predX, batch_size=conf.getint(
         'model', 'batch_size'), model_path=model_path)
-    print('AUC: ', roc_auc_score(predy, res))
+    print('AUC: ', get_auc(predy, res))
+    print('AUPR: ', get_aupr(predy, res))
 
 
 if __name__ == "__main__":
