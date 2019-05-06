@@ -13,6 +13,7 @@ class BaseModel(object):
         self.smi = tf.placeholder(shape=[None, max_smi_len], dtype=tf.int32)
         self.seq = tf.placeholder(shape=[None, max_seq_len], dtype=tf.int32)
         self.labels = tf.placeholder(shape=[None, 1], dtype=tf.int32)
+        self.training = tf.placeholder(dtype=tf.bool)
 
         self.smi_embed = tf.Variable(tf.random_normal(
             [char_smi_set_size + 1, embed_dim]))
@@ -39,9 +40,9 @@ class BaseModel(object):
 
         flatten = tf.concat([enc_smi, enc_seq], -1)
         fc1 = layers.fully_connected(flatten, 1024)
-        drop1 = layers.dropout(fc1, 0.1)
+        drop1 = layers.dropout(fc1, 0.1, is_training=self.training)
         fc2 = layers.fully_connected(drop1, 1024)
-        drop2 = layers.dropout(fc2, 0.1)
+        drop2 = layers.dropout(fc2, 0.1, is_training=self.training)
         self.fc3 = layers.fully_connected(drop2, 512)
 
         self.init = tf.global_variables_initializer
@@ -58,7 +59,8 @@ class BaseModel(object):
             x = X[i: i + batch_size]
             feed_dict = {
                 self.smi: np.asarray([t[0] for t in x]),
-                self.seq: np.asarray([t[1] for t in x])
+                self.seq: np.asarray([t[1] for t in x]),
+                self.training: False
             }
             preds = sess.run(self.predictions, feed_dict=feed_dict)
             res[i: i + batch_size] = np.squeeze(preds, 1)
@@ -66,7 +68,7 @@ class BaseModel(object):
 
 
 class CNN(BaseModel):
-    ''' Affinity Prediction '''
+    """ Affinity Prediction """
 
     def __init__(self, **kwargs):
         super(CNN, self).__init__(**kwargs)
@@ -98,7 +100,8 @@ class CNN(BaseModel):
                 feed_dict = {
                     self.smi: np.asarray([t[0] for t in x]),
                     self.seq: np.asarray([t[1] for t in x]),
-                    self.labels: y
+                    self.labels: y,
+                    self.training: True
                 }
                 # preds: [?, 1], train_res[i: i + batch_size]: [?,]
                 _, loss, preds = sess.run([self.optimizer, self.cost, self.predictions],
@@ -113,7 +116,8 @@ class CNN(BaseModel):
                 feed_dict = {
                     self.smi: np.asarray([t[0] for t in x]),
                     self.seq: np.asarray([t[1] for t in x]),
-                    self.labels: y
+                    self.labels: y,
+                    self.training: False
                 }
 
                 loss, valid_res[i: i + batch_size] = sess.run(

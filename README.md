@@ -68,7 +68,7 @@ python predict.py ../../config/predict.cfg
 | drugbank-newpair | new pair 5 cv |
 | drugbank-ecfp | ecfp + seq all training |
 | drugbank-smiles | smiles + seq all training |
-| kiba | 10 cv |
+| kiba | smiles + seq all training & 10 cv |
 | newkd | smiles + seq all training |
 
 ## Results
@@ -76,10 +76,10 @@ python predict.py ../../config/predict.cfg
 
 | dataset used in training | FDA | Merck | FDA + Merck
 | :-: | :-: | :-: | :-: |
-| kiba | 0.4803 | 0.5365 | 0.5083 |
-| newkd | 0.5250 | 0.6264 | 0.5551 |
-| DB201707 | 0.5262 | 0.6302 | 0.5516 |
-| DB201707-del-P11388 | 0.4808 | 0.5323 | 0.4929 |
+| kiba | 0.4549 | 0.3698 | 0.6055 |
+| newkd | 0.4136 | 0.6500 | 0.5914 |
+| DB201707 | 0.5257 | 0.7510 | 0.5720 |
+| DB201707-del-P11388 | 0.6015 | 0.5323 | 0.5462 |
 
 ## DrugBank 201707 Result
 * AUC 5 cross validation
@@ -100,17 +100,14 @@ python predict.py ../../config/predict.cfg
 
 ## Drop P11388 col, other as training, P11388 col as test
 
+P11388 col: 539
+
 | model | AUC | AUPR |
 | :-: | :-: | :-: |
-| CNN | 0.885 | 0.121 |
-| CNN-dropout | 0.980 | 0.565 |
-| ECFPCNN | 0.888 | 0.084 |
-| ECFPCNN-dropout | 0.5 | 0.508 |
+| CNN | 0.992 | 0.659 |
+| ECFPCNN | 0.827 | 0.047 |
 
 ## TODO List:
-(After adding dropout)
 
-* kiba training, FDA & Merck test
-* newkd training, FDA & Merck test
 
-all these are based on CNN method.
+

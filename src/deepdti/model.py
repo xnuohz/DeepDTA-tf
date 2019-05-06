@@ -30,9 +30,9 @@ class BaseModel(object):
 
     def build_fingerprints(self):
         fc1 = layers.fully_connected(self.smi, 1024)
-        drop1 = layers.dropout(fc1, 0.1, is_training=self.training)
+        drop1 = layers.dropout(fc1, 0.5, is_training=self.training)
         fc2 = layers.fully_connected(drop1, 1024)
-        drop2 = layers.dropout(fc2, 0.1, is_training=self.training)
+        drop2 = layers.dropout(fc2, 0.5, is_training=self.training)
         fc3 = layers.fully_connected(drop2, 512)
         return fc3
 
@@ -143,9 +143,9 @@ class CNN(BaseModel):
 
         flatten = tf.concat([enc_smi, enc_seq], -1)
         fc1 = layers.fully_connected(flatten, 1024)
-        drop1 = layers.dropout(fc1, 0.1, is_training=self.training)
+        drop1 = layers.dropout(fc1, 0.5, is_training=self.training)
         fc2 = layers.fully_connected(drop1, 1024)
-        drop2 = layers.dropout(fc2, 0.1, is_training=self.training)
+        drop2 = layers.dropout(fc2, 0.5, is_training=self.training)
         fc3 = layers.fully_connected(drop2, 512)
 
         self.predictions = layers.fully_connected(
@@ -168,9 +168,9 @@ class ECFPCNN(BaseModel):
 
         flatten = tf.concat([enc_smi, enc_seq], -1)
         fc1 = layers.fully_connected(flatten, 1024)
-        drop1 = layers.dropout(fc1, 0.1, is_training=self.training)
+        drop1 = layers.dropout(fc1, 0.5, is_training=self.training)
         fc2 = layers.fully_connected(drop1, 1024)
-        drop2 = layers.dropout(fc2, 0.1, is_training=self.training)
+        drop2 = layers.dropout(fc2, 0.5, is_training=self.training)
         fc3 = layers.fully_connected(drop2, 512)
 
         self.predictions = layers.fully_connected(

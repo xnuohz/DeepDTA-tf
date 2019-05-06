@@ -11,7 +11,7 @@ import tensorflow as tf
 from data_utils import get_now, label_smiles, label_sequence, get_coord
 from model import CNN
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 
 def main(argv):

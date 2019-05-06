@@ -10,6 +10,8 @@ import sys
 from model import CNN
 from data_utils import get_data
 
+os.environ['CUDA_VISIBLE_DEVICES'] = '3'
+
 
 def main(argv):
     conf = configparser.ConfigParser()

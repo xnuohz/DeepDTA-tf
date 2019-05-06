@@ -13,7 +13,7 @@ from data_utils import get_now, get_coord, label_smiles, label_sequence, label_e
 from model import CNN, ECFPCNN
 from evaluation import get_auc, get_aupr
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '2'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 
 def main(argv):
@@ -122,6 +122,9 @@ def main(argv):
                 model_path=model_path)
     res = model.predict(sess, predX, batch_size=conf.getint(
         'model', 'batch_size'), model_path=model_path)
+
+    print('pred', list(res))
+    print('truth', predy)
     print('AUC: ', get_auc(predy, res))
     print('AUPR: ', get_aupr(predy, res))
 
