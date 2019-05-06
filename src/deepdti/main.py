@@ -8,10 +8,10 @@ import pandas as pd
 import configparser
 import tensorflow as tf
 
-from data_utils import get_now, label_smiles, label_sequence
+from data_utils import get_now, label_smiles, label_sequence, get_coord
 from model import CNN
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 
 def main(argv):
@@ -45,11 +45,10 @@ def main(argv):
                 embed_dim=conf.getint('model', 'embed_dim'))
 
     trainX, trainy = [], []
-    # pos
-    pos_inter_row, pos_inter_col = np.where(inter == 1)
-    pos_coords = list(zip(pos_inter_row, pos_inter_col))
 
-    for row, col in pos_coords:
+    pos_coord, neg_coord = get_coord(inter)
+    # pos
+    for row, col in pos_coord:
         smi = ligands.iloc[row, 1]
         seq = proteins.iloc[col, 1]
         try:
@@ -60,14 +59,7 @@ def main(argv):
         except Exception:
             continue
     # neg
-    neg_inter_row, neg_inter_col = np.where(inter == 0)
-    neg_coords = list(zip(neg_inter_row, neg_inter_col))
-    np.random.shuffle(neg_coords)
-    select = np.random.choice(
-        range(len(neg_coords)), size=15 * len(trainX))
-    neg_coords = np.asarray(neg_coords)[select]
-
-    for row, col in neg_coords:
+    for row, col in neg_coord:
         smi = ligands.iloc[row, 1]
         seq = proteins.iloc[col, 1]
         try:

@@ -13,6 +13,7 @@ class BaseModel(object):
         self.seq = tf.placeholder(shape=[None, max_seq_len], dtype=tf.int32)
         self.labels = tf.placeholder(shape=[None, 1], dtype=tf.int32)
         self.init = tf.global_variables_initializer
+        self.training = tf.placeholder(dtype=tf.bool)
 
     def build_smiles(self, char_smi_set_size, embed_dim, filter_num, smi_window_len):
         smi_embed = tf.Variable(tf.random_normal(
@@ -27,12 +28,12 @@ class BaseModel(object):
         enc_smi = tf.keras.layers.GlobalAveragePooling1D()(enc_smi)
         return enc_smi
 
-    def build_ecfp(self):
+    def build_fingerprints(self):
         fc1 = layers.fully_connected(self.smi, 1024)
-        # drop1 = layers.dropout(fc1, 0.1)
-        fc2 = layers.fully_connected(fc1, 1024)
-        # drop2 = layers.dropout(fc2, 0.1)
-        fc3 = layers.fully_connected(fc2, 512)
+        drop1 = layers.dropout(fc1, 0.1, is_training=self.training)
+        fc2 = layers.fully_connected(drop1, 1024)
+        drop2 = layers.dropout(fc2, 0.1, is_training=self.training)
+        fc3 = layers.fully_connected(drop2, 512)
         return fc3
 
     def build_sequence(self, char_seq_set_size, embed_dim, filter_num, seq_window_len):
@@ -60,7 +61,7 @@ class BaseModel(object):
                 len(train_x)) if data_idx is None else data_idx
         sess.run(self.init())
 
-        best_aupr = 0
+        best_aupr, best_auc = 0, 0
         for idx in range(nb_epoch):
             np.random.shuffle(train_idx)
             train_loss, train_res = 0, np.empty(len(train_idx))
@@ -71,7 +72,8 @@ class BaseModel(object):
                 feed_dict = {
                     self.smi: np.asarray([t[0] for t in x]),
                     self.seq: np.asarray([t[1] for t in x]),
-                    self.labels: y
+                    self.labels: y,
+                    self.training: True
                 }
                 # preds: [?, 1], train_res[i: i + batch_size]: [?,]
                 _, loss, preds = sess.run([self.optimizer, self.cost, self.predictions],
@@ -88,7 +90,8 @@ class BaseModel(object):
                 feed_dict = {
                     self.smi: np.asarray([t[0] for t in x]),
                     self.seq: np.asarray([t[1] for t in x]),
-                    self.labels: y
+                    self.labels: y,
+                    self.training: False
                 }
 
                 loss, valid_res[i: i + batch_size] = sess.run(
@@ -103,8 +106,10 @@ class BaseModel(object):
                     valid_loss, 4), 'AUC:', train_auc, valid_auc, 'AUPR:', train_aupr, valid_aupr)
             if valid_aupr > best_aupr:
                 best_aupr = valid_aupr
+                best_auc = valid_auc
                 self.saver.save(
                     sess, model_path if model_path is not None else 'tmp/cnn-classifier.model')
+        print(get_now(), 'Summary ', 'Best AUC:', best_auc, 'Best AUPR:', best_aupr)
 
     def predict(self, sess, X, model_path, batch_size=128):
         assert model_path is not None
@@ -117,7 +122,8 @@ class BaseModel(object):
             x = X[i: i + batch_size]
             feed_dict = {
                 self.smi: np.asarray([t[0] for t in x]),
-                self.seq: np.asarray([t[1] for t in x])
+                self.seq: np.asarray([t[1] for t in x]),
+                self.training: False
             }
             preds = sess.run(self.predictions, feed_dict=feed_dict)
             res[i: i + batch_size] = np.squeeze(preds, 1)
@@ -137,9 +143,9 @@ class CNN(BaseModel):
 
         flatten = tf.concat([enc_smi, enc_seq], -1)
         fc1 = layers.fully_connected(flatten, 1024)
-        drop1 = layers.dropout(fc1, 0.1)
+        drop1 = layers.dropout(fc1, 0.1, is_training=self.training)
         fc2 = layers.fully_connected(drop1, 1024)
-        drop2 = layers.dropout(fc2, 0.1)
+        drop2 = layers.dropout(fc2, 0.1, is_training=self.training)
         fc3 = layers.fully_connected(drop2, 512)
 
         self.predictions = layers.fully_connected(
@@ -156,15 +162,15 @@ class ECFPCNN(BaseModel):
         super(ECFPCNN, self).__init__(**kwargs)
         self.smi = tf.placeholder(shape=[None, max_smi_len], dtype=tf.float32)
         # smi encode params is fixed currently.
-        enc_smi = self.build_ecfp()
+        enc_smi = self.build_fingerprints()
         enc_seq = self.build_sequence(
             char_seq_set_size, embed_dim, filter_num, seq_window_len)
 
         flatten = tf.concat([enc_smi, enc_seq], -1)
         fc1 = layers.fully_connected(flatten, 1024)
-        drop1 = layers.dropout(fc1, 0.1)
+        drop1 = layers.dropout(fc1, 0.1, is_training=self.training)
         fc2 = layers.fully_connected(drop1, 1024)
-        drop2 = layers.dropout(fc2, 0.1)
+        drop2 = layers.dropout(fc2, 0.1, is_training=self.training)
         fc3 = layers.fully_connected(drop2, 512)
 
         self.predictions = layers.fully_connected(
