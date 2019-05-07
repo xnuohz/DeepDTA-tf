@@ -74,14 +74,21 @@ python predict.py ../../config/predict.cfg
 ## Results
 * AUCs(smiles + seq)
 
+| dataset used in training | FDA(old/new) | Merck(old/new) | FDA + Merck(old/new)
+| :-: | :-: | :-: | :-: |
+| kiba | 0.4549/ | 0.3698/ | 0.6055/ |
+| newkd | 0.4136/ | 0.6500/ | 0.5914/ |
+| DB201707 | 0.5257/0.5376 | 0.7510/0.6844 | 0.5720/0.5617 |
+| DB201707-del-P11388 | 0.6015/0.5059 | 0.5323/0.5490 | 0.5462/0.4842 |
+
+* AUCs(fingerprints + seq) only new
+
 | dataset used in training | FDA | Merck | FDA + Merck
 | :-: | :-: | :-: | :-: |
-| kiba | 0.4549 | 0.3698 | 0.6055 |
-| newkd | 0.4136 | 0.6500 | 0.5914 |
-| DB201707 | 0.5257 | 0.7510 | 0.5720 |
-| DB201707-del-P11388 | 0.6015 | 0.5323 | 0.5462 |
+| DB201707 | 0.3585 | 0.4719 | 0.4324 |
 
 ## DrugBank 201707 Result
+1. CNN (smiles + seq)
 * AUC 5 cross validation
 
 | type | 1 | 2 | 3 | 4 | 5 |
@@ -98,6 +105,21 @@ python predict.py ../../config/predict.cfg
 | new pair | 0.663 | 0.635 | 0.644 | 0.628 | 0.651 |
 | new drug | 0.501 | 0.479 | 0.405 | 0.421 | 0.409 |
 
+2. CNN (smiles + seq) vs ECFPCNN (fingerprints + seq)
+* AUC 5 cross validation
+
+| methods | new target | new drug | new pair |
+| :-: | :-: | :-: | :-: |
+| CNN | 0.844 | 0.872 | 0.924 |
+| ECFPCNN | 0.837 | 0.857 | 0.912 |
+
+* AUPR 5 cross validation
+
+| methods | new target | new drug | new pair |
+| :-: | :-: | :-: | :-: |
+| CNN | 0.488 | 0.563 | 0.720 |
+| ECFPCNN | 0.524 | 0.551 | 0.702 |
+
 ## Drop P11388 col, other as training, P11388 col as test
 
 P11388 col: 539
@@ -107,7 +129,9 @@ P11388 col: 539
 | CNN | 0.992 | 0.659 |
 | ECFPCNN | 0.827 | 0.047 |
 
-## TODO List:
-
+## Tips:
+FDA & Merck: some wrong with calc raw smiles fingerprints,
+so raw smiles file is renamed to ligands_raw.csv, and the updated file
+is renamed as ligands_v2.csv which currently called ligands.csv.
 
 

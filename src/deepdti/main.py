@@ -8,8 +8,8 @@ import pandas as pd
 import configparser
 import tensorflow as tf
 
-from data_utils import get_now, label_smiles, label_sequence, get_coord
-from model import CNN
+from data_utils import get_now, label_smiles, label_sequence, get_coord, label_ecfp
+from model import CNN, ECFPCNN
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
@@ -35,14 +35,22 @@ def main(argv):
 
     sess = tf.InteractiveSession(
         config=tf.ConfigProto(allow_soft_placement=True))
-    model = CNN(filter_num=conf.getint('model', 'filter_num'),
-                smi_window_len=conf.getint('model', 'smi_window_len'),
-                seq_window_len=conf.getint('model', 'seq_window_len'),
-                max_smi_len=max_smi_len,
-                max_seq_len=max_seq_len,
-                char_smi_set_size=len(char_smi_set),
-                char_seq_set_size=len(char_seq_set),
-                embed_dim=conf.getint('model', 'embed_dim'))
+    ''' SMILES + seq '''
+    # model = CNN(filter_num=conf.getint('model', 'filter_num'),
+    #             smi_window_len=conf.getint('model', 'smi_window_len'),
+    #             seq_window_len=conf.getint('model', 'seq_window_len'),
+    #             max_smi_len=max_smi_len,
+    #             max_seq_len=max_seq_len,
+    #             char_smi_set_size=len(char_smi_set),
+    #             char_seq_set_size=len(char_seq_set),
+    #             embed_dim=conf.getint('model', 'embed_dim'))
+    ''' ECFP + seq '''
+    model = ECFPCNN(filter_num=conf.getint('model', 'filter_num'),
+                    seq_window_len=conf.getint('model', 'seq_window_len'),
+                    char_seq_set_size=len(char_seq_set),
+                    embed_dim=conf.getint('model', 'embed_dim'),
+                    max_smi_len=max_smi_len,
+                    max_seq_len=max_seq_len)
 
     trainX, trainy = [], []
 
@@ -52,7 +60,11 @@ def main(argv):
         smi = ligands.iloc[row, 1]
         seq = proteins.iloc[col, 1]
         try:
-            smi_vector = label_smiles(smi, max_smi_len, char_smi_set)
+            ''' CNN '''
+            # smi_vector = label_smiles(smi, max_smi_len, char_smi_set)
+            ''' ECFPCNN '''
+            smi_vector = label_ecfp(smi, max_smi_len)
+
             seq_vector = label_sequence(seq, max_seq_len, char_seq_set)
             trainX.append([smi_vector, seq_vector])
             trainy.append(1)
@@ -63,7 +75,11 @@ def main(argv):
         smi = ligands.iloc[row, 1]
         seq = proteins.iloc[col, 1]
         try:
-            smi_vector = label_smiles(smi, max_smi_len, char_smi_set)
+            ''' CNN '''
+            # smi_vector = label_smiles(smi, max_smi_len, char_smi_set)
+            ''' ECFPCNN '''
+            smi_vector = label_ecfp(smi, max_smi_len)
+
             seq_vector = label_sequence(seq, max_seq_len, char_seq_set)
             trainX.append([smi_vector, seq_vector])
             trainy.append(0)

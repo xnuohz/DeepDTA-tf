@@ -35,8 +35,11 @@ def get_data(ligands, proteins, max_smi_len, max_seq_len, char_smi_set, char_seq
     seq_feature = []
 
     for idx, row in ligands.iterrows():
+        ''' CNN '''
         smi_feature.append(label_smiles(
             row[1], max_smi_len, char_smi_set))
+        ''' ECFPCNN '''
+        # smi_feature.append(label_ecfp(row[1], max_smi_len))
 
     for idx, row in proteins.iterrows():
         seq_feature.append(label_sequence(
@@ -51,7 +54,11 @@ def get_feature(ligands, proteins, inter, coords, max_smi_len, char_smi_set, max
         smi = ligands.iloc[row, 1]
         seq = proteins.iloc[col, 1]
         try:
+            ''' CNN '''
             smi_vector = label_smiles(smi, max_smi_len, char_smi_set)
+            ''' ECFPCNN '''
+            # smi_vector = label_ecfp(smi, max_smi_len)
+
             seq_vector = label_sequence(seq, max_seq_len, char_seq_set)
             X.append([smi_vector, seq_vector])
             y.append(inter[row][col])
