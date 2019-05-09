@@ -8,10 +8,10 @@ import pandas as pd
 import configparser
 import tensorflow as tf
 
-from data_utils import get_now, label_smiles, label_sequence, get_coord, label_ecfp
+from data_utils import get_now, label_smiles, label_sequence, get_coord, label_ecfp, get_feature
 from model import CNN, ECFPCNN
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '2'
 
 
 def main(argv):
@@ -27,7 +27,7 @@ def main(argv):
     proteins = pd.read_csv(data_path + 'proteins.csv',
                            header=None, names=['id', 'seq'])
     inter = pd.read_csv(data_path + 'inter.csv', header=None)
-
+    inter = np.asarray(inter)
     print(ligands.shape, proteins.shape, inter.shape)
 
     char_smi_set = json.load(open(conf.get('model', 'char_smi')))
@@ -52,42 +52,9 @@ def main(argv):
                     max_smi_len=max_smi_len,
                     max_seq_len=max_seq_len)
 
-    trainX, trainy = [], []
-
     pos_coord, neg_coord = get_coord(inter)
-    # pos
-    for row, col in pos_coord:
-        smi = ligands.iloc[row, 1]
-        seq = proteins.iloc[col, 1]
-        try:
-            ''' CNN '''
-            # smi_vector = label_smiles(smi, max_smi_len, char_smi_set)
-            ''' ECFPCNN '''
-            smi_vector = label_ecfp(smi, max_smi_len)
-
-            seq_vector = label_sequence(seq, max_seq_len, char_seq_set)
-            trainX.append([smi_vector, seq_vector])
-            trainy.append(1)
-        except Exception:
-            continue
-    # neg
-    for row, col in neg_coord:
-        smi = ligands.iloc[row, 1]
-        seq = proteins.iloc[col, 1]
-        try:
-            ''' CNN '''
-            # smi_vector = label_smiles(smi, max_smi_len, char_smi_set)
-            ''' ECFPCNN '''
-            smi_vector = label_ecfp(smi, max_smi_len)
-
-            seq_vector = label_sequence(seq, max_seq_len, char_seq_set)
-            trainX.append([smi_vector, seq_vector])
-            trainy.append(0)
-        except Exception:
-            continue
-
-    trainX = np.asarray(trainX)
-    trainy = np.asarray(trainy).reshape([-1, 1])
+    coords = np.concatenate([pos_coord, neg_coord], 0)
+    trainX, trainy = get_feature(ligands, proteins, inter, coords, max_smi_len, char_smi_set, max_seq_len, char_seq_set)
 
     print(trainX.shape, trainy.shape)
 

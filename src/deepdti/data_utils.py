@@ -68,7 +68,7 @@ def get_feature(ligands, proteins, inter, coords, max_smi_len, char_smi_set, max
 
 
 def get_coord(inter):
-    ''' default pos : neg = 1 : 15 '''
+    """ default pos : neg = 1 : 15 """
     pos_row, pos_col = np.where(inter == 1)
     pos_coord = np.asarray(list(zip(pos_row, pos_col)))
     neg_row, neg_col = np.where(inter == 0)
