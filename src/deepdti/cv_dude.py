@@ -62,7 +62,6 @@ def main(argv):
                     nb_epoch=conf.getint('model', 'num_epoch'),
                     batch_size=conf.getint('model', 'batch_size'),
                     model_path=model_path)
-        break
 
 
 def get_dude_feature(path, proteins, coords, max_smi_len, char_smi_set, max_seq_len, char_seq_set):
