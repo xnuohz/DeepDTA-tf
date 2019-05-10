@@ -59,6 +59,13 @@ python special.py ../../config/model.cfg ../../config/data_drugbank.cfg
 cd src/deepdta or cd/src/deepdti
 python predict.py ../../config/predict.cfg
 ```
+* DUD-E is different from other datasets, so I wrote the file separately.
+```bash
+# cross validation
+python cv_dude.py ../../config/model.cfg ../../config/data_dude.cfg
+# predict dude using trained DrugBank model
+python predict_dude.py ../../config/predict.cfg
+```
 ## Model file
 
 | path | description |

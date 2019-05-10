@@ -45,7 +45,7 @@ def main(argv):
     #                 max_smi_len=max_smi_len,
     #                 max_seq_len=max_seq_len)
 
-    model_path = model_path = os.path.join(
+    model_path = os.path.join(
         conf.get('model', 'path', fallback='tmp'), 'all.model')
 
     for data_name in data_predicted:
