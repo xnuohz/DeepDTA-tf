@@ -87,6 +87,7 @@ python predict_dude.py ../../config/predict.cfg
 | newkd | 0.4136/ | 0.6500/ | 0.5914/ |
 | DB201707 | 0.5257/0.5376 | 0.7510/0.6844 | 0.5720/0.5617 |
 | DB201707-del-P11388 | 0.6015/0.5059 | 0.5323/0.5490 | 0.5462/0.4842 |
+| DUD-E | /0.4301 | /0.5790 | /0.4697 |
 
 * AUCs(fingerprints + seq) only new
 
@@ -141,4 +142,15 @@ FDA & Merck: some wrong with calc raw smiles fingerprints,
 so raw smiles file is renamed to ligands_raw.csv, and the updated file
 is renamed as ligands_v2.csv which currently called ligands.csv.
 
+## DUD-E Result
+* AUC 5 cross validation
 
+| type | 1 | 2 | 3 | 4 | 5 |
+| :-: | :-: | :-: | :-: | :-: | :-: |
+| new target | 0.917 | 0.905 | 0.892 | 0.896 | 0.917 |
+
+* AUPR 5 cross validation
+
+| type | 1 | 2 | 3 | 4 | 5 |
+| :-: | :-: | :-: | :-: | :-: | :-: |
+| new target | 0.569 | 0.502 | 0.457 | 0.495 | 0.554 |
