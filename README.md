@@ -163,7 +163,7 @@ DUD-E as training, P11388 col as test
 | type | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | new target |  |  |  |  |  |  |  |  |  |  |
-| new pair |  |  |  |  |  |  |  |  |  |  |
+| new pair | 0.927 | 0.929 | 0.920 | 0.951 | 0.949 | 0.944 | 0.950 | 0.936 | 0.936 | 0.949 |
 | new drug |  |  |  |  |  |  |  |  |  |  |
 
 * AUPR 10 cross validation
@@ -171,7 +171,7 @@ DUD-E as training, P11388 col as test
 | type | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | new target |  |  |  |  |  |  |  |  |  |  |
-| new pair |  |  |  |  |  |  |  |  |  |  |
+| new pair | 0.721 | 0.744 | 0.724 | 0.756 | 0.729 | 0.724 | 0.769 | 0.763 | 0.719 | 0.774 |
 | new drug |  |  |  |  |  |  |  |  |  |  |
 
 2. (549, 424) del none rows & cols
@@ -194,7 +194,7 @@ DUD-E as training, P11388 col as test
 ## ToDo List:
 
 * CNN NeoData 10 cv new target (done)
-* CNN NeoData 10 cv new pair
+* CNN NeoData 10 cv new pair (done)
 * CNN NeoData 10 cv new drug
 * CNN NeoData(delete none row and col) 10 cv new target
 * CNN NeoData(delete none row and col) 10 cv new drug
