@@ -79,17 +79,17 @@ python predict_dude.py ../../config/predict.cfg
 | newkd | smiles + seq all training |
 
 ## Results
-* AUCs(smiles + seq)
+* AUCs/AUPRs(smiles + seq)
 
-| dataset used in training | FDA(old/new) | Merck(old/new) | FDA + Merck(old/new)
+| dataset used in training | FDA | Merck | FDA + Merck |
 | :-: | :-: | :-: | :-: |
-| kiba | 0.4549/ | 0.3698/ | 0.6055/ |
-| newkd | 0.4136/ | 0.6500/ | 0.5914/ |
-| DB201707 | 0.5257/0.5376 | 0.7510/0.6844 | 0.5720/0.5617 |
-| DB201707-del-P11388 | 0.6015/0.5059 | 0.5323/0.5490 | 0.5462/0.4842 |
-| DUD-E | /0.4301 | /0.5790 | /0.4697 |
+| kiba | 0.5220/0.0984 | 0.3677/0.3513 | 0.3722/0.0801 |
+| newkd | 0.5149/0.0481 | 0.3396/0.1494 | 0.6389/0.1108 |
+| DB201707 | 0.5257/0.0413 | 0.7510/0.3879 | 0.5720/0.0643 |
+| DB201707-del-P11388 | 0.6015/0.0922 | 0.5323/0.1938 | 0.5462/0.0880 |
+| DUD-E | 0.5637/0.0510 | 0.6698/0.3256 | 0.6068/0.0828 |
 
-* AUCs(fingerprints + seq) only new
+* AUCs(fingerprints + seq)
 
 | dataset used in training | FDA | Merck | FDA + Merck
 | :-: | :-: | :-: | :-: |
@@ -135,12 +135,13 @@ P11388 col: 539
 | model | AUC | AUPR |
 | :-: | :-: | :-: |
 | CNN | 0.992 | 0.659 |
-| ECFPCNN | 0.827 | 0.047 |
+| ECFPCNN | 0.827 | 0.047 
 
-## Tips:
-FDA & Merck: some wrong with calc raw smiles fingerprints,
-so raw smiles file is renamed to ligands_raw.csv, and the updated file
-is renamed as ligands_v2.csv which currently called ligands.csv.
+DUD-E as training, P11388 col as test
+
+| model | AUC | AUPR |
+| :-: | :-: | :-: |
+| CNN | 0.490 | 0.015 |
 
 ## DUD-E Result
 * AUC 5 cross validation
@@ -154,3 +155,48 @@ is renamed as ligands_v2.csv which currently called ligands.csv.
 | type | 1 | 2 | 3 | 4 | 5 |
 | :-: | :-: | :-: | :-: | :-: | :-: |
 | new target | 0.569 | 0.502 | 0.457 | 0.495 | 0.554 |
+
+## NeoData Result
+1. (708, 1512)
+* AUC 10 cross validation
+
+| type | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| new target |  |  |  |  |  |  |  |  |  |  |
+| new pair |  |  |  |  |  |  |  |  |  |  |
+| new drug |  |  |  |  |  |  |  |  |  |  |
+
+* AUPR 10 cross validation
+
+| type | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| new target |  |  |  |  |  |  |  |  |  |  |
+| new pair |  |  |  |  |  |  |  |  |  |  |
+| new drug |  |  |  |  |  |  |  |  |  |  |
+
+2. (549, 424) del none rows & cols
+* AUC 10 cross validation
+
+| type | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| new target |  |  |  |  |  |  |  |  |  |  |
+| new pair |  |  |  |  |  |  |  |  |  |  |
+| new drug |  |  |  |  |  |  |  |  |  |  |
+
+* AUPR 10 cross validation
+
+| type | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| new target |  |  |  |  |  |  |  |  |  |  |
+| new pair |  |  |  |  |  |  |  |  |  |  |
+| new drug |  |  |  |  |  |  |  |  |  |  |
+
+## ToDo List:
+
+* CNN NeoData 10 cv new target (done)
+* CNN NeoData 10 cv new pair
+* CNN NeoData 10 cv new drug
+* CNN NeoData(delete none row and col) 10 cv new target
+* CNN NeoData(delete none row and col) 10 cv new drug
+* CNN NeoData(delete none row and col) 10 cv new pair
+

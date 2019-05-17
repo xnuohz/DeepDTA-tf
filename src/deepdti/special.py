@@ -13,7 +13,7 @@ from data_utils import get_now, get_coord, label_smiles, label_sequence, label_e
 from model import CNN, ECFPCNN
 from evaluation import get_auc, get_aupr
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '2'
 
 
 def main(argv):
@@ -43,27 +43,27 @@ def main(argv):
     sess = tf.InteractiveSession(
         config=tf.ConfigProto(allow_soft_placement=True))
     ''' SMILES + seq '''
-    # model = CNN(filter_num=conf.getint('model', 'filter_num'),
-    #             smi_window_len=conf.getint('model', 'smi_window_len'),
-    #             seq_window_len=conf.getint('model', 'seq_window_len'),
-    #             max_smi_len=max_smi_len,
-    #             max_seq_len=max_seq_len,
-    #             char_smi_set_size=len(char_smi_set),
-    #             char_seq_set_size=len(char_seq_set),
-    #             embed_dim=conf.getint('model', 'embed_dim'))
+    model = CNN(filter_num=conf.getint('model', 'filter_num'),
+                smi_window_len=conf.getint('model', 'smi_window_len'),
+                seq_window_len=conf.getint('model', 'seq_window_len'),
+                max_smi_len=max_smi_len,
+                max_seq_len=max_seq_len,
+                char_smi_set_size=len(char_smi_set),
+                char_seq_set_size=len(char_seq_set),
+                embed_dim=conf.getint('model', 'embed_dim'))
     ''' ECFP + seq '''
-    model = ECFPCNN(filter_num=conf.getint('model', 'filter_num'),
-                    seq_window_len=conf.getint('model', 'seq_window_len'),
-                    char_seq_set_size=len(char_seq_set),
-                    embed_dim=conf.getint('model', 'embed_dim'),
-                    max_smi_len=max_smi_len,
-                    max_seq_len=max_seq_len)
+    # model = ECFPCNN(filter_num=conf.getint('model', 'filter_num'),
+    #                 seq_window_len=conf.getint('model', 'seq_window_len'),
+    #                 char_seq_set_size=len(char_seq_set),
+    #                 embed_dim=conf.getint('model', 'embed_dim'),
+    #                 max_smi_len=max_smi_len,
+    #                 max_seq_len=max_seq_len)
 
-    pos_coord, neg_coord = get_coord(inter)
-    coords = np.concatenate([pos_coord, neg_coord], 0)
-    trainX, trainy = get_feature(ligands, proteins, inter, coords, max_smi_len, char_smi_set, max_seq_len, char_seq_set)
-
-    print(trainX.shape, trainy.shape)
+    # pos_coord, neg_coord = get_coord(inter)
+    # coords = np.concatenate([pos_coord, neg_coord], 0)
+    # trainX, trainy = get_feature(ligands, proteins, inter, coords, max_smi_len, char_smi_set, max_seq_len, char_seq_set)
+    #
+    # print(trainX.shape, trainy.shape)
 
     pred_coords = np.concatenate([np.arange(1567).reshape([-1, 1]), np.asarray([539] * 1567).reshape([-1, 1])], 1)
     predX, predy = get_feature(ligands, proteins, inter, pred_coords, max_smi_len, char_smi_set, max_seq_len, char_seq_set)
@@ -72,10 +72,10 @@ def main(argv):
 
     model_path = os.path.join(
         conf.get('model', 'path', fallback='tmp'), 'all.model')
-    model.train(sess, trainX, trainy,
-                nb_epoch=conf.getint('model', 'num_epoch'),
-                batch_size=conf.getint('model', 'batch_size'),
-                model_path=model_path)
+    # model.train(sess, trainX, trainy,
+    #             nb_epoch=conf.getint('model', 'num_epoch'),
+    #             batch_size=conf.getint('model', 'batch_size'),
+    #             model_path=model_path)
     res = model.predict(sess, predX, batch_size=conf.getint(
         'model', 'batch_size'), model_path=model_path)
 

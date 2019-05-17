@@ -10,7 +10,7 @@ import sys
 from model import CNN, ECFPCNN
 from data_utils import get_data, label_ecfp
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '2'
 
 
 def main(argv):

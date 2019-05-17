@@ -7,8 +7,6 @@ import numpy as np
 import pandas as pd
 import configparser
 import tensorflow as tf
-
-from data_utils import get_now, label_smiles, label_sequence, get_coord, label_ecfp, get_feature
 from model import CNN
 from cv_dude import get_dude_feature
 
