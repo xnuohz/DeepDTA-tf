@@ -11,7 +11,7 @@ import tensorflow as tf
 from data_utils import get_now, get_feature, new_pair_fold, new_ligand_fold, new_protein_fold
 from model import CNN
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '2'
+os.environ['CUDA_VISIBLE_DEVICES'] = '3'
 
 
 def main(argv):

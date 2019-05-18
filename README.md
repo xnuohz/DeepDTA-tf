@@ -162,41 +162,38 @@ DUD-E as training, P11388 col as test
 
 | type | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| new target |  |  |  |  |  |  |  |  |  |  |
+| new target | 0.897 | 0.895 | 0.873 | 0.916 | 0.899 | 0.835 | 0.912 | 0.918 | 0.786 | 0.874 |
 | new pair | 0.927 | 0.929 | 0.920 | 0.951 | 0.949 | 0.944 | 0.950 | 0.936 | 0.936 | 0.949 |
-| new drug |  |  |  |  |  |  |  |  |  |  |
+| new drug | 0.894 | 0.880 | 0.873 | 0.874 | 0.880 | 0.902 | 0.879 | 0.916 | 0.886 | 0.894 |
 
 * AUPR 10 cross validation
 
 | type | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| new target |  |  |  |  |  |  |  |  |  |  |
+| new target | 0.676 | 0.677 | 0.597 | 0.658 | 0.686 | 0.373 | 0.707 | 0.713 | 0.195 | 0.521 |
 | new pair | 0.721 | 0.744 | 0.724 | 0.756 | 0.729 | 0.724 | 0.769 | 0.763 | 0.719 | 0.774 |
-| new drug |  |  |  |  |  |  |  |  |  |  |
+| new drug | 0.707 | 0.639 | 0.506 | 0.559 | 0.525 | 0.670 | 0.560 | 0.687 | 0.618 | 0.703 |
 
 2. (549, 424) del none rows & cols
 * AUC 10 cross validation
 
 | type | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| new target |  |  |  |  |  |  |  |  |  |  |
-| new pair |  |  |  |  |  |  |  |  |  |  |
-| new drug |  |  |  |  |  |  |  |  |  |  |
+| new target | 0.862 | 0.862 | 0.800 | 0.877 | 0.796 | 0.845 | 0.852 | 0.865 | 0.797 | 0.849 |
+| new pair | 0.891 | 0.885 | 0.902 | 0.923 | 0.927 | 0.915 | 0.925 | 0.908 | 0.909 | 0.914 |
+| new drug | 0.753 | 0.807 | 0.804 | 0.893 | 0.729 | 0.763 | 0.822 | 0.805 | 0.820 | 0.854 |
 
 * AUPR 10 cross validation
 
 | type | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| new target |  |  |  |  |  |  |  |  |  |  |
-| new pair |  |  |  |  |  |  |  |  |  |  |
-| new drug |  |  |  |  |  |  |  |  |  |  |
+| new target | 0.580 | 0.527 | 0.502 | 0.607 | 0.468 | 0.439 | 0.496 | 0.529 | 0.417 | 0.478 |
+| new pair | 0.667 | 0.699 | 0.651 | 0.663 | 0.715 | 0.684 | 0.725 | 0.697 | 0.667 | 0.714 |
+| new drug | 0.385 | 0.530 | 0.444 | 0.700 | 0.362 | 0.436 | 0.486 | 0.433 | 0.519 | 0.403 |
 
 ## ToDo List:
 
-* CNN NeoData 10 cv new target (done)
-* CNN NeoData 10 cv new pair (done)
-* CNN NeoData 10 cv new drug
-* CNN NeoData(delete none row and col) 10 cv new target
-* CNN NeoData(delete none row and col) 10 cv new drug
+* CNN NeoData(delete none row and col) 10 cv new target (done)
+* CNN NeoData(delete none row and col) 10 cv new drug (done)
 * CNN NeoData(delete none row and col) 10 cv new pair
 
