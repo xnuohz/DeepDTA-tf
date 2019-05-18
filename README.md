@@ -190,10 +190,3 @@ DUD-E as training, P11388 col as test
 | new target | 0.580 | 0.527 | 0.502 | 0.607 | 0.468 | 0.439 | 0.496 | 0.529 | 0.417 | 0.478 |
 | new pair | 0.667 | 0.699 | 0.651 | 0.663 | 0.715 | 0.684 | 0.725 | 0.697 | 0.667 | 0.714 |
 | new drug | 0.385 | 0.530 | 0.444 | 0.700 | 0.362 | 0.436 | 0.486 | 0.433 | 0.519 | 0.403 |
-
-## ToDo List:
-
-* CNN NeoData(delete none row and col) 10 cv new target (done)
-* CNN NeoData(delete none row and col) 10 cv new drug (done)
-* CNN NeoData(delete none row and col) 10 cv new pair
-
