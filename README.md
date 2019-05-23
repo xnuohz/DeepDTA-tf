@@ -174,6 +174,22 @@ DUD-E as training, P11388 col as test
 | new pair | 0.721 | 0.744 | 0.724 | 0.756 | 0.729 | 0.724 | 0.769 | 0.763 | 0.719 | 0.774 |
 | new drug | 0.707 | 0.639 | 0.506 | 0.559 | 0.525 | 0.670 | 0.560 | 0.687 | 0.618 | 0.703 |
 
+* AUC 5 cross validation
+
+| type | 1 | 2 | 3 | 4 | 5 |
+| :-: | :-: | :-: | :-: | :-: | :-: |
+| new target | 0.880 | 0.858 | 0.894 | 0.910 | 0.815 |
+| new pair | 0.921 | 0.924 | 0.944 | 0.941 | 0.925 |
+| new drug | 0.888 | 0.870 | 0.880 | 0.902 | 0.888 |
+
+* AUPR 5 cross validation
+
+| type | 1 | 2 | 3 | 4 | 5 |
+| :-: | :-: | :-: | :-: | :-: | :-: |
+| new target | 0.632 | 0.591 | 0.609 | 0.633 | 0.355 |
+| new pair | 0.719 | 0.702 | 0.751 | 0.731 | 0.696 |
+| new drug | 0.622 | 0.505 | 0.543 | 0.560 | 0.648 |
+
 2. (549, 424) del none rows & cols
 * AUC 10 cross validation
 
@@ -190,3 +206,24 @@ DUD-E as training, P11388 col as test
 | new target | 0.580 | 0.527 | 0.502 | 0.607 | 0.468 | 0.439 | 0.496 | 0.529 | 0.417 | 0.478 |
 | new pair | 0.667 | 0.699 | 0.651 | 0.663 | 0.715 | 0.684 | 0.725 | 0.697 | 0.667 | 0.714 |
 | new drug | 0.385 | 0.530 | 0.444 | 0.700 | 0.362 | 0.436 | 0.486 | 0.433 | 0.519 | 0.403 |
+
+## ToDo List:
+
+DeepDTA, E2E, Neo 3 methods: (708, 1512) and (549, 424) 5 cv
+
+new drug, new target, new pair data split, just (708, 1512) (done)
+
+(708, 1512):
+DeepDTA new pair 5 cv --> ok GPU:3
+DeepDTA new target 5 cv --> ok GPU:3
+DeepDTA new drug 5 cv --> ok GPU:3
+
+E2E-CPI new pair 5 cv
+E2E-CPI new target 5 cv
+E2E-CPI new drug 5 cv
+
+NeoDTI new pair 5 cv
+NeoDTI new target 5 cv
+NeoDTI new drug 5 cv
+
+--> next: split (549, 424) first!!!

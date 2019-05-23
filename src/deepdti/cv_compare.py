@@ -11,7 +11,7 @@ import tensorflow as tf
 from data_utils import get_now, get_feature, new_pair_fold, new_ligand_fold, new_protein_fold
 from model import CNN, ECFPCNN
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '3'
 
 
 def create_folds(argv):
@@ -75,21 +75,21 @@ def main(argv):
     sess = tf.InteractiveSession(
         config=tf.ConfigProto(allow_soft_placement=True))
     ''' SMILES + seq '''
-    # model = CNN(filter_num=conf.getint('model', 'filter_num'),
-    #             smi_window_len=conf.getint('model', 'smi_window_len'),
-    #             seq_window_len=conf.getint('model', 'seq_window_len'),
-    #             max_smi_len=max_smi_len,
-    #             max_seq_len=max_seq_len,
-    #             char_smi_set_size=len(char_smi_set),
-    #             char_seq_set_size=len(char_seq_set),
-    #             embed_dim=conf.getint('model', 'embed_dim'))
+    model = CNN(filter_num=conf.getint('model', 'filter_num'),
+                smi_window_len=conf.getint('model', 'smi_window_len'),
+                seq_window_len=conf.getint('model', 'seq_window_len'),
+                max_smi_len=max_smi_len,
+                max_seq_len=max_seq_len,
+                char_smi_set_size=len(char_smi_set),
+                char_seq_set_size=len(char_seq_set),
+                embed_dim=conf.getint('model', 'embed_dim'))
     ''' ECFP + seq '''
-    model = ECFPCNN(filter_num=conf.getint('model', 'filter_num'),
-                    seq_window_len=conf.getint('model', 'seq_window_len'),
-                    char_seq_set_size=len(char_seq_set),
-                    embed_dim=conf.getint('model', 'embed_dim'),
-                    max_smi_len=max_smi_len,
-                    max_seq_len=max_seq_len)
+    # model = ECFPCNN(filter_num=conf.getint('model', 'filter_num'),
+    #                 seq_window_len=conf.getint('model', 'seq_window_len'),
+    #                 char_seq_set_size=len(char_seq_set),
+    #                 embed_dim=conf.getint('model', 'embed_dim'),
+    #                 max_smi_len=max_smi_len,
+    #                 max_seq_len=max_seq_len)
 
     for cv_id in range(cv_num):
         print('start cv', cv_id)
@@ -104,7 +104,6 @@ def main(argv):
                     nb_epoch=conf.getint('model', 'num_epoch'),
                     batch_size=conf.getint('model', 'batch_size'),
                     model_path=model_path)
-        break
 
 
 if __name__ == "__main__":
