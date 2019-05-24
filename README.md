@@ -207,23 +207,29 @@ DUD-E as training, P11388 col as test
 | new pair | 0.667 | 0.699 | 0.651 | 0.663 | 0.715 | 0.684 | 0.725 | 0.697 | 0.667 | 0.714 |
 | new drug | 0.385 | 0.530 | 0.444 | 0.700 | 0.362 | 0.436 | 0.486 | 0.433 | 0.519 | 0.403 |
 
+* AUC 5 cross validation
+
+| type | 1 | 2 | 3 | 4 | 5 |
+| :-: | :-: | :-: | :-: | :-: | :-: |
+| new target | 0.837 | 0.826 | 0.815 | 0.824 | 0.775 |
+| new pair | 0.874 | 0.890 | 0.913 | 0.900 | 0.894 |
+| new drug | 0.734 | 0.833 | 0.800 | 0.804 | 0.780 |
+
+* AUPR 5 cross validation
+
+| type | 1 | 2 | 3 | 4 | 5 |
+| :-: | :-: | :-: | :-: | :-: | :-: |
+| new target | 0.504 | 0.605 | 0.449 | 0.485 | 0.349 |
+| new pair | 0.653 | 0.680 | 0.676 | 0.654 | 0.659 |
+| new drug | 0.386 | 0.524 | 0.412 | 0.446 | 0.326 |
+
 ## ToDo List:
 
-DeepDTA, E2E, Neo 3 methods: (708, 1512) and (549, 424) 5 cv
+folds_neo_708_1512: (708, 1512) 5 cv split
+folds: (549, 424) 5 cv split
 
-new drug, new target, new pair data split, just (708, 1512) (done)
+(549, 424): DeepDTA & NeoDTI 5 cv in new d, t, p
 
-(708, 1512):
-DeepDTA new pair 5 cv --> ok GPU:3
-DeepDTA new target 5 cv --> ok GPU:3
-DeepDTA new drug 5 cv --> ok GPU:3
-
-E2E-CPI new pair 5 cv
-E2E-CPI new target 5 cv
-E2E-CPI new drug 5 cv
-
-NeoDTI new pair 5 cv
-NeoDTI new target 5 cv
-NeoDTI new drug 5 cv
-
---> next: split (549, 424) first!!!
+neo t
+neo d
+neo p

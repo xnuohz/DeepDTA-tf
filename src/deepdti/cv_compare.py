@@ -107,6 +107,6 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    # 生成3种预测类型的划分 python cv_compare.py ../../config/model.cfg ../../config/data_drugbank.cfg
+    # 生成3种预测类型的划分 python cv_compare.py ../../config/data_drugbank.cfg
     # create_folds(sys.argv[1:])
     main(sys.argv[1:])
